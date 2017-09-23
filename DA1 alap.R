@@ -104,3 +104,8 @@ summary (fit)
 abline (fit)
 ## summary and abline are for linear functions
 abline (fit, col='red')
+
+predict (fit)
+predict (fit, list (h=174))
+predict (fit, list (h=c(160,174)))
+
