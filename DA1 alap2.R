@@ -100,3 +100,112 @@ df <- read.csv ('http://bit.ly/CEU-R-hotels-2017')
 str (df)
 summary (df)
 dim (df)
+##factors: kategórikus változókat valahogy eltárolja másképp. Ettől megszabadulvni:
+df <- read.csv ('http://bit.ly/CEU-R-hotels-2017', stringsAsFactors = FALSE)
+str (df)
+##TODO: price -> plot, summary, frequency table
+hotels <- df
+plot (hotels$price_huf)
+min (hotels$price_HUF)
+max (hotels$price_HUF)
+plot (hotels$price_HUF, min = 5000, max = 500000)
+hist (hotels$price_HUF)
+boxplot (hotels$price_HUF)
+summary (hotels$price_HUF)
+table (hotels$price_HUF)
+barplot (table(hotels$price_HUF))
+table (hotels$city)
+## in order to create meaningful frequency table:
+table (cut(hotels$price_HUF, breaks = 10))
+plot (table (cut(hotels$price_HUF, breaks = 10)))
+dotchart (table (cut(hotels$price_HUF, breaks = 10)))
+
+plot (table (cut(hotels$price_HUF, breaks = 50, dig.lab = 8)))   #number number instead of exp number format
+table (cut(hotels$price_HUF, breaks = 50, dig.lab = 8))
+
+hotels$price_huf_cat <- cut (hotels$price_HUF, breaks = 20, dig.lab = 8)
+tab_price_HUF_cat <- table(hotels$price_huf_cat)
+dotchart(tab_price_HUF_cat)
+
+which.max (hotels$price_HUF)
+hotels [which.max(hotels$price_HUF),]   #max priced hotel
+hotels [which.max(hotels$price_HUF),'hotel_name']   #max priced hotel name   
+
+##TODO: cheapest
+hotels [which.min(hotels$price_HUF),]   #max priced hotel
+
+#all places where we are payin more than 100,000 HUF
+hotels [hotels$price_HUF > 100000,]   #TRUE or FALSE for all hotels       
+pricey = hotels [hotels$price_HUF > 100000,]   #TRUE or FALSE for all hotels
+str (pricey)
+table (pricey$city)
+
+
+##másik módja 
+which (hotels$price_HUF > 100000)
+## hotels with price >100000 and rating < 3
+
+hotels[which (hotels$price_HUF > 100000 & hotels$rating < 3),]
+## másik módja ugyanennek
+pricey <- hotels [hotels$price_HUF > 100000,]
+pricey
+pricey [which(pricey$rating < 3), ]   #kell a which, mert pricey egy csomó helyen NA-t tartalmaz
+
+
+
+##egy jobb módszer mindenre
+install.packages ('data.table')
+library (data.table)
+hotels <- data.table (hotels)
+str (hotels)
+##whatever you can do with tdata frame, you can do with data table too
+##here you don't have to add extra , to get the row:
+hotels [1]
+##also simpler structure for search
+hotels [price_HUF > 100000]
+hotels [price_HUF > 100000 & rating < 3]
+
+##TODO filter price <10000 and rating > 4
+hotels [price_HUF < 10000 & rating > 4]
+##OĐO: list the cities of those above
+hotels [price_HUF < 10000 & rating > 4,2]
+hotels [price_HUF < 10000 & rating > 4,'city']
+hotels [price_HUF < 10000 & rating > 4,city]   #itt R kiértékeli a city változót. city itt a "city" oszlop vektort jelenti
+hotels [price_HUF < 10000 & rating > 4,length (city)]   #itt R kiértékeli a city változót. city itt a "city" oszlop vektort jelenti
+length (hotels [price_HUF < 10000 & rating > 4,city])
+hotels [price_HUF < 10000 & rating > 4,unique(city)]   
+## a fentiekben először kiértékeli az első kifejezést, és ami a filter-ben benne marad, az lesz csak a city-ben, nem az eredeti tábla összes city-je
+hotels [price_HUF < 10000 & rating > 4,.N]      #R function to give the number of rows after filter
+hotels [price_HUF < 10000 & rating > 4,mean(stars)]   
+hotels [price_HUF < 10000 & rating > 4,mean(stars,na.rm = TRUE)]   #remove missing values   
+hotels [price_HUF < 10000 & rating > 4,median(stars,na.rm = TRUE)]   #remove missing values   
+hotels [price_HUF < 10000 & rating > 4,table(stars)]   
+
+
+##SQL -> SELECT, UPDATE,...
+##dt [i, j, by = ]
+hotels[price_HUF > 250000, mean (stars, na.rm = TRUE), by = city]
+hotels[price_HUF > 250000, city == 'Naples, Italy']
+##TODO: average price per number of starts of all places
+hotels [,mean(price_HUF, na.rm=TRUE), by = stars]
+##it is not too nice, as not ordered, nor have a decent column name
+hotels [, list(avg_price=mean(price_HUF, na.rm=TRUE)), by = stars]
+hotels [, .(avg_price=mean(price_HUF, na.rm=TRUE)), by = stars]   # "." = "list"
+price_per_stars = hotels [, list(avg_price=mean(price_HUF, na.rm=TRUE)), by = stars]
+price_per_stars
+setorder (price_per_stars, stars)
+price_per_stars
+setorder (price_per_stars, -stars) #reverse ordering
+price_per_stars
+
+
+## 
+hotels [, list(
+               avg_price=mean(price_HUF, na.rm=TRUE))
+        , by = city]
+hotels [, list(
+              avg_price=mean(price_HUF, na.rm=TRUE),
+              avg_stars = mean (stars, na.rm = TRUE),
+              .N,
+              with5Stars = sum (stars ==5))
+  , by = city]
