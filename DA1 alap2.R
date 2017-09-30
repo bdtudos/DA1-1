@@ -44,7 +44,6 @@ range (df$BMI)
 plot (df)
 hist(df$BMI)
 sum(df$weightkg)
-lenght (df$BMI)
 length(df$BMI)
 dim(df)
 nrow(df)
@@ -132,9 +131,9 @@ hotels [which.max(hotels$price_HUF),]   #max priced hotel
 hotels [which.max(hotels$price_HUF),'hotel_name']   #max priced hotel name   
 
 ##TODO: cheapest
-hotels [which.min(hotels$price_HUF),]   #max priced hotel
+hotels [which.min(hotels$price_HUF),]   #min priced hotel
 
-#all places where we are payin more than 100,000 HUF
+#all places where we are paying more than 100,000 HUF
 hotels [hotels$price_HUF > 100000,]   #TRUE or FALSE for all hotels       
 pricey = hotels [hotels$price_HUF > 100000,]   #TRUE or FALSE for all hotels
 str (pricey)
@@ -186,7 +185,7 @@ hotels [price_HUF < 10000 & rating > 4,table(stars)]
 ##dt [i, j, by = ]
 hotels[price_HUF > 250000, mean (stars, na.rm = TRUE), by = city]
 hotels[price_HUF > 250000, city == 'Naples, Italy']
-##TODO: average price per number of starts of all places
+##TODO: average price per number of stars of all places
 hotels [,mean(price_HUF, na.rm=TRUE), by = stars]
 ##it is not too nice, as not ordered, nor have a decent column name
 hotels [, list(avg_price=mean(price_HUF, na.rm=TRUE)), by = stars]
